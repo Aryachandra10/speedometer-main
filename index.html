@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Speedometer Gauge Final</title>
 
   <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html, body {
       background: transparent !important;
       font-family: 'DS-Digital', monospace;
@@ -21,17 +20,19 @@
       padding: 30px;
     }
 
-    .speedo-root { 
-      display: flex; 
-      align-items: flex-end; 
-      gap: 45px; 
+    /* hide initially until game tells to show */
+    body { display: none; }
+
+    .speedo-root {
+      display: flex;
+      align-items: flex-end;
+      gap: 45px;
       transform: scale(0.55);
       transform-origin: bottom right;
-      filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); /* efek elegan */
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.3));
     }
 
     .vertical-cols { display: flex; gap: 70px; justify-content: center; }
-
     .bar-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .bar-label, .bar-percentage { font-size: 20px; font-weight: bold; color: #000; }
 
@@ -41,21 +42,22 @@
       border-radius: 18px; overflow: hidden;
       border: 2px solid #cfcfcf;
       display: flex; flex-direction: column; justify-content: flex-end;
-      backdrop-filter: blur(4px);          /* glass look */
+      backdrop-filter: blur(4px);
     }
     .bar-fill-vertical {
-      width: 100%; background: linear-gradient(to top, #1b9c00, #6dff48);
-      transition: height .25s ease-in-out; /* animasi lembut */
+      width: 100%;
+      background: linear-gradient(to top, #1b9c00, #6dff48);
+      transition: height .25s ease-in-out;
+      height: 0%;
     }
 
     .digital-container { min-width: 340px; padding: 28px 32px; }
-
     .digital-screen { display: flex; align-items: baseline; justify-content: center; gap: 18px; }
 
     .speed-value {
       font-size: 64px; color: lime;
       text-shadow: 0 0 12px lime;
-      border-bottom: 2px solid rgba(0,255,0,.4);  /* garis bawah */
+      border-bottom: 2px solid rgba(0,255,0,.4);
       padding-bottom: 2px;
     }
     .speed-unit { font-size: 20px; color: #000; }
@@ -63,19 +65,16 @@
     .gear-display {
       width: 60px; height: 60px; border-radius: 50%; border: 3px solid #aaa;
       display: flex; align-items: center; justify-content: center;
-      font-size: 34px; color: #000;
-      transition: .2s;
+      font-size: 34px; color: #000; transition: .2s;
     }
-    .gear-display.active {
-      border-color: lime; box-shadow: 0 0 10px lime;
-    }
+    .gear-display.active { border-color: lime; box-shadow: 0 0 10px lime; }
 
     .speed-progress {
       width: 100%; height: 12px; border: 2px solid #d3d3d3;
       background: rgba(255,255,255,0.05); border-radius: 10px;
       margin-top: 15px; overflow: hidden;
     }
-    .progress-bar { height: 100%; background: lime; transition: width .15s; }
+    .progress-bar { height: 100%; background: lime; transition: width .15s; width: 0%; }
 
     .rpm-digital { margin-top: 20px; padding: 18px; text-align: center; }
     .rpm-label { font-size: 14px; letter-spacing: 3px; color: #555; }
@@ -108,15 +107,11 @@
       50% { box-shadow: 0 0 14px yellow; }
       100% { box-shadow: 0 0 0 yellow; }
     }
-    .icon.active {
-      border-color: yellow;
-      animation: blink 0.6s infinite; /* berkedip */
-    }
+    .icon.active { border-color: yellow; animation: blink 0.6s infinite; }
   </style>
 </head>
 
 <body>
-
   <div class="speedo-root">
     <div class="vertical-cols">
       <div class="bar-container">
@@ -147,90 +142,106 @@
       </div>
 
       <div class="indicators">
-        <button class="icon" id="left-signal"><img src="https://img.icons8.com/pulsar-line/50/circled-left-2.png"></button>
-        <button class="icon" id="engine-icon"><img src="https://img.icons8.com/ios/50/engine.png"></button>
-        <button class="icon" id="right-icon"><img style="transform: scaleX(-1);" src="https://img.icons8.com/pulsar-line/50/circled-left-2.png"></button>
+        <button class="icon" id="left-signal"><img src="https://img.icons8.com/pulsar-line/50/circled-left-2.png" alt="left"></button>
+        <button class="icon" id="engine-icon"><img src="https://img.icons8.com/ios/50/engine.png" alt="engine"></button>
+        <button class="icon" id="right-icon"><img style="transform: scaleX(-1);" src="https://img.icons8.com/pulsar-line/50/circled-left-2.png" alt="right"></button>
       </div>
     </section>
   </div>
 
   <script>
-    let speedMode = 0;
-
-    const healthBar = document.getElementById("health-bar");
-    const fuelBar = document.getElementById("fuel-bar");
-    const healthPercent = document.getElementById("health-percent");
-    const fuelPercent = document.getElementById("fuel-percent");
-
+    // ---------- Element references ----------
     const speedDisplay = document.getElementById("speed-display");
     const speedProgress = document.getElementById("speed-progress-bar");
-
     const rpmDisplay = document.getElementById("rpm-display");
     const rpmProgress = document.getElementById("rpm-progress-bar");
-
+    const fuelBar = document.getElementById("fuel-bar");
+    const fuelPercent = document.getElementById("fuel-percent");
+    const healthBar = document.getElementById("health-bar");
+    const healthPercent = document.getElementById("health-percent");
     const gearDisplay = document.getElementById("gear-display");
-
-    const leftIndicator = document.getElementById("left-signal");
-    const rightIndicator = document.getElementById("right-icon");
+    const leftSignal = document.getElementById("left-signal");
+    const rightSignal = document.getElementById("right-icon");
     const engineIcon = document.getElementById("engine-icon");
 
-    window.addEventListener("message", function(event) {
-      const d = event.data;
-      if (d.type !== "updateHUD") return;
+    // Helper: safe set text
+    const safeSetText = (el, txt) => { if (el) el.textContent = txt; };
 
-      setSpeed(d.speed);
-      setRPM(d.rpm);
-      setFuel(d.fuel);
-      setHealth(d.health);
-      setGear(d.gear);
-      setLeftIndicator(d.leftSignal);
-      setRightIndicator(d.rightSignal);
-      setEngine(d.engine);
+    // Accept both styles of message payloads (action or type)
+    window.addEventListener("message", (event) => {
+      const d = event.data || {};
+      // debug (dev tools in NUI): console.debug('NUI message', d);
+
+      // Show / Hide controls (support both "displayHUD" shape and "show"/"hide")
+      const displayState = (d.action === "displayHUD" && typeof d.state === "boolean")
+        ? d.state
+        : (d.action === "show" ? true : (d.action === "hide" ? false : null));
+      if (displayState !== null) {
+        document.body.style.display = displayState ? "flex" : "none";
+        return;
+      }
+      if (d.type === "displayHUD" && typeof d.state === "boolean") {
+        document.body.style.display = d.state ? "flex" : "none";
+        return;
+      }
+
+      // Update payload: handle both d.action === "update" and d.type === "updateHUD"
+      const isUpdate = (d.action === "update" || d.type === "updateHUD" || d.type === "update");
+      if (!isUpdate) return;
+
+      try {
+        // speed (d.speed expected in m/s)
+        if (typeof d.speed === "number") {
+          const kmh = Math.round(d.speed * 3.6);
+          safeSetText(speedDisplay, String(kmh).padStart(3, "0"));
+          if (speedProgress) speedProgress.style.width = Math.min(kmh / 240 * 100, 100) + "%";
+        }
+
+        // rpm (d.rpm expected numeric)
+        if (typeof d.rpm === "number") {
+          const r = Math.round(d.rpm);
+          safeSetText(rpmDisplay, String(r).padStart(4, "0"));
+          if (rpmProgress) rpmProgress.style.width = Math.min(r / 8000 * 100, 100) + "%";
+        }
+
+        // fuel (0..1) and health (0..1)
+        if (typeof d.fuel === "number") {
+          const fp = Math.max(0, Math.min(1, d.fuel)) * 100;
+          if (fuelBar) fuelBar.style.height = fp + "%";
+          safeSetText(fuelPercent, Math.round(fp));
+        }
+        if (typeof d.health === "number") {
+          const hp = Math.max(0, Math.min(1, d.health)) * 100;
+          if (healthBar) healthBar.style.height = hp + "%";
+          safeSetText(healthPercent, Math.round(hp));
+        }
+
+        // gear
+        if (typeof d.gear === "number") {
+          const g = d.gear === 0 ? "N" : d.gear;
+          safeSetText(gearDisplay, g);
+          if (gearDisplay) {
+            gearDisplay.classList.add("active");
+            setTimeout(() => gearDisplay.classList.remove("active"), 250);
+          }
+        }
+
+        // engine indicator (boolean)
+        if (typeof d.engine === "boolean") {
+          if (d.engine) engineIcon.classList.add("active"); else engineIcon.classList.remove("active");
+        }
+
+        // left / right signals (boolean)
+        if (typeof d.leftSignal === "boolean") {
+          d.leftSignal ? leftSignal.classList.add("active") : leftSignal.classList.remove("active");
+        }
+        if (typeof d.rightSignal === "boolean") {
+          d.rightSignal ? rightSignal.classList.add("active") : rightSignal.classList.remove("active");
+        }
+      } catch (err) {
+        console.error("HUD update error:", err);
+      }
     });
-
-    function setSpeed(s) {
-      if (speedMode === 1) s = s * 2.236936;
-      else if (speedMode === 2) s = s * 1.943844;
-      else s = s * 3.6;
-      speedDisplay.textContent = String(Math.round(s)).padStart(3, "0");
-      speedProgress.style.width = Math.min(s / 200 * 100, 100) + "%";
-    }
-
-    function setRPM(r) {
-      rpmDisplay.textContent = String(Math.round(r)).padStart(4, "0");
-      rpmProgress.style.width = Math.min(r / 8000 * 100, 100) + "%";
-    }
-
-    function setFuel(f) {
-      const p = f * 100;
-      fuelBar.style.height = p + "%";
-      fuelPercent.textContent = Math.round(p);
-    }
-
-    function setHealth(h) {
-      const p = h * 100;
-      healthBar.style.height = p + "%";
-      healthPercent.textContent = Math.round(p);
-    }
-
-    function setGear(g) {
-      gearDisplay.textContent = g === 0 ? "N" : g;
-      gearDisplay.classList.add("active");
-      setTimeout(() => gearDisplay.classList.remove("active"), 250);
-    }
-
-    function setEngine(x) {
-      x ? engineIcon.classList.add("active") : engineIcon.classList.remove("active");
-    }
-
-    function setLeftIndicator(x) {
-      x ? leftIndicator.classList.add("active") : leftIndicator.classList.remove("active");
-    }
-
-    function setRightIndicator(x) {
-      x ? rightIndicator.classList.add("active") : rightIndicator.classList.remove("active");
-    }
   </script>
-
 </body>
 </html>
