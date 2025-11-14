@@ -1,51 +1,130 @@
-const needle = document.getElementById('needle');
-const speedDisplay = document.getElementById('speed-display');
-const gearDisplay = document.getElementById('gear-display');
-const healthBar = document.getElementById('health-bar');
-const fuelBar = document.getElementById('fuel-bar');
-const ticksContainer = document.getElementById('ticks');
+let elements = {};
+let speedMode = 1;
+let indicators = 0;
 
-// Membuat garis tick RPM
-for (let i = 0; i <= 180; i += 10) {
-  const tick = document.createElement('div');
-  tick.className = 'tick';
-  tick.style.transform = `rotate(${i - 90}deg) translateY(-130px)`;
-  ticksContainer.appendChild(tick);
+const onOrOff = state => state ? 'On' : 'Off';
+
+/**
+ * Updates the display of the engine state.
+ *
+ * @param {boolean} state If true, the engine is on; otherwise, it is off.
+ * @description Sets the engine state display based on the provided boolean state.
+ */
+function setEngine(state) {
+    elements.engine.innerText = onOrOff(state);
 }
 
-let speed = 0;
-let direction = 1;
-
-function updateGauge() {
-
-  // Simulasi naik turun kecepatan
-  if (speed >= 220) direction = -1;
-  if (speed <= 0) direction = 1;
-  speed += direction * 4;
-
-  // Rotasi jarum (-135° hingga +135°)
-  const angle = -135 + (speed / 220) * 270;
-  needle.style.transform = `rotate(${angle}deg)`;
-
-  // Update angka speed format 000
-  speedDisplay.textContent = String(Math.round(speed)).padStart(3, "0");
-
-  // Logic perpindahan gear
-  const gears = ['N', '1', '2', '3', '4', '5', '6'];
-  let selectedGear = Math.floor(speed / 40);
-  if (selectedGear < 0) selectedGear = 0;
-  if (selectedGear > 6) selectedGear = 6;
-  gearDisplay.textContent = gears[selectedGear];
-
-  // Update health & fuel (vertikal)
-  const health = Math.max(0, 100 - speed / 2);
-  const fuel = Math.max(0, 100 - speed / 3);
-  healthBar.style.height = `${health}%`;
-  fuelBar.style.height = `${fuel}%`;
-
-  // Update angka persentase
-  document.getElementById("health-percent").textContent = Math.round(health);
-  document.getElementById("fuel-percent").textContent = Math.round(fuel);
+/**
+ * Updates the speed display based on the current speed mode.
+ * @param {number} speed - The speed value in meters per second (m/s).
+ * @description Converts the speed value to the current speed mode and updates the display.
+ */
+function setSpeed(speed) {
+    switch(speedMode)
+    {
+        case 1: speed = elements.speed.innerText = `${Math.round(speed * 2.236936)} MPH`; break; // MPH
+        case 2: speed = elements.speed.innerText = `${Math.round(speed * 1.943844)} Knots`; break; // Knots
+        default: speed = elements.speed.innerText = `${Math.round(speed * 3.6)} KMH`; // KMH
+    }
 }
 
-setInterval(updateGauge, 120);
+/**
+ * Updates the RPM (Revolutions Per Minute) display.
+ * @param {number} rpm - The RPM value to display. (0 to 1).
+ */
+function setRPM(rpm) {
+    elements.rpm.innerText = `${rpm.toFixed(4)} RPM`;
+}
+
+/**
+ * Updates the fuel level display as a percentage.
+ * @param {number} fuel - The fuel level (0 to 1).
+ */
+function setFuel(fuel) {
+    elements.fuel.innerText = `${(fuel * 100).toFixed(1)}%`;
+}
+
+/**
+ * Updates the vehicle health display as a percentage.
+ * @param {number} health - The vehicle health level (0 to 1).
+ */
+function setHealth(health) {
+    elements.health.innerText = `${(health * 100).toFixed(1)}%`;
+}
+
+/**
+ * Updates the current gear display.
+ * @param {number} gear - The current gear to display. 0 represents neutral/reverse.
+ */
+function setGear(gear) {
+    elements.gear.innerText = String(gear);
+}
+
+/**
+ * Updates the headlights status display.
+ * @param {number} state - The headlight state (0: Off, 1: On, 2: High Beam).
+ */
+function setHeadlights(state) {
+    switch(state)
+    {
+        case 1: elements.headlights.innerText = 'On'; break;
+        case 2: elements.headlights.innerText = 'High Beam'; break;
+        default: elements.headlights.innerText = 'Off';
+    }
+}
+
+/**
+ * Sets the state of the left turn indicator and updates the display.
+ * @param {boolean} state - If true, turns the left indicator on; otherwise, turns it off.
+ */
+function setLeftIndicator(state) {
+    indicators = (indicators & 0b10) | (state ? 0b01 : 0b00);
+    elements.indicators.innerText = `${indicators & 0b01 ? 'On' : 'Off'} / ${indicators & 0b10 ? 'On' : 'Off'}`;
+}
+
+/**
+ * Sets the state of the right turn indicator and updates the display.
+ * @param {boolean} state - If true, turns the right indicator on; otherwise, turns it off.
+ */
+function setRightIndicator(state) {
+    indicators = (indicators & 0b01) | (state ? 0b10 : 0b00);
+    elements.indicators.innerText = `${indicators & 0b01 ? 'On' : 'Off'} / ${indicators & 0b10 ? 'On' : 'Off'}`;
+}
+
+/**
+ * Updates the seatbelt status display.
+ * @param {boolean} state - If true, indicates seatbelts are fastened; otherwise, indicates they are not.
+ */
+function setSeatbelts(state) {
+    elements.seatbelts.innerText = onOrOff(state);
+}
+
+/**
+ * Sets the speed display mode and updates the speed unit display.
+ * @param {number} mode - The speed mode to set (0: KMH, 1: MPH, 2: Knots).
+ */
+function setSpeedMode(mode) {
+    speedMode = mode;
+    switch(mode)
+    {
+        case 1: elements.speedMode.innerText = 'MPH'; break;
+        case 2: elements.speedMode.innerText = 'Knots'; break;
+        default: elements.speedMode.innerText = 'KMH';
+    }
+}
+
+// Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    elements = {
+        engine: document.getElementById('engine'),
+        speed: document.getElementById('speed'),
+        rpm: document.getElementById('rpm'),
+        fuel: document.getElementById('fuel'),
+        health: document.getElementById('health'),
+        gear: document.getElementById('gear'),
+        headlights: document.getElementById('headlights'),
+        indicators: document.getElementById('indicators'),
+        seatbelts: document.getElementById('seatbelts'),
+        speedMode: document.getElementById('speed-mode'),
+    };
+});
