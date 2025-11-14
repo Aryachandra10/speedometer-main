@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speedometer Gauge Final</title>
+
+  <!-- DIGITAL FONT -->
+  <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DS-Digital', monospace;
+      background: #0d0d0d;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding: 30px;
+    }
+
+    .speedo-root {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 40px;
+      padding: 10px;
+    }
+
+    .vertical-cols {
+      display: flex;
+      flex-direction: row;
+      gap: 90px;
+      margin-right: 20px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bar-label {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px white;
+    }
+
+    .bar-vertical {
+      width: 35px;
+      height: 260px;
+      background: #222;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid #444;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      box-shadow: 0 0 18px rgba(0,0,0,0.6);
+    }
+
+    /* Hilangkan warna gradasi lama */
+    .bar-fill-vertical {
+      background: none !important;
+      box-shadow: none !important;
+    }
+
+    .progress-bar {
+      background: none !important;
+      box-shadow: none !important;
+    }
+
+    .bar-percentage {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* biar % tidak kotak */
+    .percent-symbol {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      margin-left: 2px;
+      font-weight: bold;
+    }
+
+    .digital-container {
+      background: #000;
+      border-radius: 20px;
+      border: 2px solid #333;
+      padding: 30px 40px;
+      min-width: 360px;
+      box-shadow: 0 0 35px rgba(0,255,0,0.25), inset 0 0 20px rgba(0,0,0,0.6);
+    }
+
+    .digital-screen {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .speed-value {
+      font-size: 64px;
+      color: lime;
+      text-shadow: 0 0 20px lime;
+    }
+
+    .speed-unit {
+      font-size: 20px;
+      opacity: 0.9;
+    }
+
+    .gear-display {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #222;
+      color: yellow;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #555;
+      box-shadow: 0 0 15px rgba(255,255,0,0.8);
+      font-size: 34px;
+    }
+
+    .speed-progress {
+      width: 100%;
+      height: 12px;
+      background: #222;
+      margin-top: 15px;
+      border-radius: 10px;
+      border: 2px solid #444;
+      overflow: hidden;
+    }
+
+    .rpm-digital {
+      margin-top: 25px;
+      background: #111;
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #333;
+      text-align: center;
+    }
+
+    .rpm-label {
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: #aaa;
+    }
+
+    .rpm-value {
+      font-size: 30px;
+      color: lime;
+      text-shadow: 0 0 15px lime;
+      margin-top: 5px;
+    }
+
+    .rpm-progress {
+      width: 100%;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background: #222;
+      margin-top: 10px;
+    }
+
+    .indicators {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 22px;
+      justify-items: center;
+      margin-top: 30px;
+    }
+
+    .icon {
+      width: 55px;
+      height: 55px;
+      background: #222;
+      border-radius: 50%;
+      border: 2px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .icon img {
+      width: 30px;
+      filter: invert(1);
+      opacity: .8;
+    }
+
+    .icon.active {
+      background: #555;
+      border-color: yellow;
+      box-shadow: 0 0 20px yellow;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="speedo-root">
+
+    <!-- LEFT: HEALTH + FUEL -->
+    <div class="vertical-cols">
+
+      <!-- HEALTH -->
+      <div class="bar-container">
+        <div class="bar-label">H</div>
+        <div class="bar-vertical">
+          <div class="bar-fill-vertical" id="health-bar"></div>
+        </div>
+        <div class="bar-percentage">
+          <span id="health-percent">0</span><span class="percent-symbol">%</span>
+        </div>
+      </div>
+
+      <!-- FUEL -->
+      <div class="bar-container">
+        <div class="bar-label">F</div>
+        <div class="bar-vertical">
+          <div class="bar-fill-vertical" id="fuel-bar"></div>
+        </div>
+        <div class="bar-percentage">
+          <span id="fuel-percent">0</span><span class="percent-symbol">%</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT SPEEDOMETER -->
+    <section class="digital-container">
+
+      <div class="digital-screen">
+        <div class="speed-value" id="speed-display">000</div>
+        <div class="speed-unit">KMH</div>
+        <div class="gear-display" id="gear-display">N</div>
+      </div>
+
+      <div class="speed-progress">
+        <div class="progress-bar" id="speed-progress-bar"></div>
+      </div>
+
+      <div class="rpm-digital">
+        <div class="rpm-label">RPM</div>
+        <div class="rpm-value" id="rpm-display">0000</div>
+        <div class="rpm-progress">
+          <div class="progress-bar" id="rpm-progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- INDICATOR BUTTONS -->
+      <div class="indicators">
+        <button class="icon" id="left-signal">
+          <img src="https://img.icons8.com/pulsar-line/50/circled-left-2.png">
+        </button>
+        <button class="icon" id="engine-icon">
+          <img src="https://img.icons8.com/ios/50/engine.png">
+        </button>
+        <button class="icon" id="right-icon">
+          <img style="transform: scaleX(-1);" src="https://img.icons8.com/pulsar-line/50/circled-left-2.png">
+        </button>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script>
+    let speed = 0;
+    let rpm = 0;
+    let health = 0;   // default kendaraan belum diperbaiki
+    let fuel = 0;     // default kendaraan belum mengisi bensin
+
+    function updateAll() {
+      document.getElementById("health-bar").style.height = health + "%";
+      document.getElementById("health-percent").textContent = Math.round(health);
+
+      document.getElementById("fuel-bar").style.height = fuel + "%";
+      document.getElementById("fuel-percent").textContent = Math.round(fuel);
+
+      document.getElementById("speed-display").textContent =
+        String(Math.round(speed)).padStart(3, "0");
+      document.getElementById("speed-progress-bar").style.width = (speed / 200 * 100) + "%";
+
+      document.getElementById("rpm-display").textContent =
+        String(Math.round(rpm)).padStart(4, "0");
+      document.getElementById("rpm-progress-bar").style.width = (rpm / 8000 * 100) + "%";
+    }
+
+    document.querySelectorAll(".icon").forEach(btn => {
+      btn.addEventListener("click", () => {
+        btn.classList.toggle("active");
+      });
+    });
+
+    updateAll();
+  </script>
+
+</body>
+</html>
