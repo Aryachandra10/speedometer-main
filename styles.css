@@ -1,208 +1,89 @@
-/* ======================================================
-   GLOBAL
-====================================================== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ================================================
+   SPEEDOMETER GAUGE - STYLES
+   ================================================ */
+
+/* Reset & Global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 html, body {
-  background: transparent !important;
+  width: 100%;
+  height: 100%;
   font-family: 'DS-Digital', monospace;
-  color: #000;
-  height: 100vh;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  padding: 30px;
-}
-
-/* hide initially until game tells to show */
-body { display: none; }
-
-/* ======================================================
-   LAYOUT ROOT
-====================================================== */
-.speedo-root {
-  display: flex;
-  align-items: flex-end;
-  gap: 45px;
-  transform: scale(0.55);
-  transform-origin: bottom right;
-  filter: drop-shadow(0 0 10px rgba(0,0,0,0.3));
-}
-
-.vertical-cols { display: flex; gap: 70px; justify-content: center; }
-
-.bar-container { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  gap: 10px; 
-}
-
-.bar-label, .bar-percentage {
-  font-size: 20px;
-  font-weight: bold;
-  color: #000;
-}
-
-/* ======================================================
-   HEALTH & FUEL BARS
-====================================================== */
-.bar-vertical {
-  width: 34px;
-  height: 230px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 18px;
+  background: #fff;            /* putih */
+  color: #000;                  /* hitam supaya jelas di background putih */
   overflow: hidden;
-  border: 2px solid #cfcfcf;
+  display: flex;                /* tampil langsung */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Class untuk sembunyikan HUD dari game */
+body.hideHUD {
+  display: none !important;
+}
+
+/* Container */
+.container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  backdrop-filter: blur(4px);
-}
-
-.bar-fill-vertical {
-  width: 100%;
-  background: linear-gradient(to top, #1b9c00, #6dff48);
-  transition: height .25s ease-in-out;
-  height: 0%;
-}
-
-/* ======================================================
-   DIGITAL SPEED + GEAR
-====================================================== */
-.digital-container { 
-  min-width: 340px; 
-  padding: 28px 32px; 
-}
-
-.digital-screen { 
-  display: flex; 
-  align-items: baseline;
-  justify-content: center;
+  align-items: center;
   gap: 18px;
 }
 
-.speed-value {
-  font-size: 64px;
-  color: lime;
-  text-shadow: 0 0 12px lime;
-  border-bottom: 2px solid rgba(0,255,0,.4);
-  padding-bottom: 2px;
+/* Speed Text */
+.speed {
+  font-size: 86px;
+  font-weight: bold;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
 }
 
-.speed-unit {
-  font-size: 20px;
-  color: #000;
-}
-
-.gear-display {
-  width: 60px;
-  height: 60px;
+/* Gauge Circle */
+.gauge {
+  width: 260px;
+  height: 260px;
   border-radius: 50%;
-  border: 3px solid #aaa;
+  border: 8px solid #000;
+  position: relative;
+}
+
+/* Needle */
+.needle {
+  width: 8px;
+  height: 110px;
+  background: #e60000;
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: bottom center;
+  border-radius: 6px;
+  transform: rotate(-130deg); /* posisi awal */
+}
+
+/* Fuel & Engine Row */
+.info-row {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 34px;
-  color: #000;
-  transition: .2s;
+  gap: 55px;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-.gear-display.active {
-  border-color: lime;
-  box-shadow: 0 0 10px lime;
-}
-
-/* ======================================================
-   SPEED PROGRESS BAR
-====================================================== */
-.speed-progress {
-  width: 100%;
-  height: 12px;
-  border: 2px solid #d3d3d3;
-  background: rgba(255,255,255,0.05);
-  border-radius: 10px;
-  margin-top: 15px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  background: lime;
-  transition: width .15s;
-  width: 0%;
-}
-
-/* ======================================================
-   RPM SECTION
-====================================================== */
-.rpm-digital {
-  margin-top: 20px;
-  padding: 18px;
-  text-align: center;
-}
-
-.rpm-label {
-  font-size: 14px;
-  letter-spacing: 3px;
-  color: #555;
-}
-
-.rpm-value {
-  font-size: 30px;
-  margin-top: 5px;
-  color: lime;
-  text-shadow: 0 0 10px lime;
-  border-bottom: 2px solid rgba(0,255,0,.4);
-}
-
-.rpm-progress {
-  width: 100%;
+/* Battery / Fuel Bar */
+.bar {
+  width: 115px;
   height: 10px;
-  border: 1px solid #d3d3d3;
-  background: rgba(255,255,255,0.05);
-  border-radius: 5px;
-  margin-top: 10px;
+  background: transparent; /* sesuai permintaan: tanpa warna */
+  border: 2px solid #000;
+  border-radius: 6px;
   overflow: hidden;
 }
 
-/* ======================================================
-   INDICATORS (ENGINE / SIGNAL LEFT / RIGHT)
-====================================================== */
-.indicators {
-  margin-top: 28px;
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 22px;
-  justify-items: center;
-}
-
-.icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  background: rgba(0,0,0,0.05);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: .25s;
-}
-
-.icon img {
-  width: 27px;
-  opacity: 1;
-  filter: invert(0);
-}
-
-@keyframes blink {
-  0% { box-shadow: 0 0 0 yellow; }
-  50% { box-shadow: 0 0 14px yellow; }
-  100% { box-shadow: 0 0 0 yellow; }
-}
-
-.icon.active {
-  border-color: yellow;
-  animation: blink 0.6s infinite;
+.bar-fill {
+  height: 100%;
+  background: #000;        /* hitam isinya */
+  width: 65%;              /* default 65% */
+  transition: 0.3s;
 }
