@@ -1,7 +1,9 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
 
 html, body {
-  background: transparent !important;   /* INVISIBLE UNTUK GTA V */
+  background: transparent !important;
   font-family: 'DS-Digital', monospace;
   color: #000;
   height: 100vh;
@@ -11,120 +13,171 @@ html, body {
   padding: 30px;
 }
 
+/* Hide HUD until script show */
+body { display: none; }
+
+/* ROOT SCALE */
 .speedo-root {
   display: flex;
   align-items: flex-end;
-  justify-content: center;
   gap: 45px;
-  transform: scale(0.92);
+  transform: scale(0.55);
+  transform-origin: bottom right;
+  filter: drop-shadow(0 0 12px rgba(0,0,0,0.45));
 }
 
-.vertical-cols { display: flex; gap: 70px; justify-content: center; }
-
-.bar-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.bar-label { font-size: 20px; font-weight: bold; color: #000; }
-
-.bar-vertical {
-  width: 34px;
-  height: 230px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 18px;
-  overflow: hidden;
-  border: 2px solid #cfcfcf;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.bar-fill-vertical { width: 100%; background: #38b000; }
-.bar-percentage { font-size: 15px; font-weight: bold; color: #000; }
-
+/* Modern Glass Card */
 .digital-container {
-  background: transparent;
-  border: none;
-  padding: 28px 32px;
-  min-width: 340px;
+  min-width: 360px;
+  padding: 30px 35px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 0 20px rgba(0,0,0,0.35);
 }
 
+/* SPEED DISPLAY */
 .digital-screen {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: center;
-  gap: 18px;
+  gap: 20px;
 }
 
 .speed-value {
-  font-size: 64px;
-  color: lime;
-  text-shadow: 0 0 12px lime;
+  font-size: 78px;
+  color: #00ff4c;
+  text-shadow: 0 0 15px #00ff4c;
+  letter-spacing: 3px;
+  filter: drop-shadow(0 0 8px rgba(0,255,0,.45));
+  transition: .15s ease-in-out;
 }
 
-.speed-unit { font-size: 20px; color: #000; }
+.speed-unit {
+  font-size: 22px;
+  font-weight: bold;
+  color: #222;
+  opacity: .8;
+}
 
+/* GEAR */
 .gear-display {
-  width: 60px; height: 60px; border-radius: 50%;
-  background: transparent;
-  color: #000;
-  display: flex; align-items: center; justify-content: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
   border: 3px solid #aaa;
-  font-size: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(6px);
+  transition: .2s;
+}
+.gear-display.active {
+  border-color: #00ff4c;
+  box-shadow: 0 0 10px #00ff4c;
+  transform: rotate(13deg);
 }
 
+/* SPEED BAR */
 .speed-progress {
   width: 100%; height: 12px;
-  background: rgba(255,255,255,0.05);
   border-radius: 10px;
-  border: 2px solid #d3d3d3;
-  margin-top: 15px;
+  background: rgba(0,0,0,0.14);
+  border: 2px solid rgba(255,255,255,0.35);
+  margin-top: 16px;
   overflow: hidden;
 }
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff4c, #86ff00);
+  transition: width .2s cubic-bezier(.2,.6,.2,1);
+}
 
-.progress-bar { height: 100%; background: lime; }
-
+/* RPM */
 .rpm-digital {
-  margin-top: 20px;
-  background: transparent;
-  padding: 18px;
-  border-radius: 12px;
-  border: none;
+  margin-top: 22px;
   text-align: center;
 }
-
-.rpm-label { font-size: 14px; letter-spacing: 3px; color: #555; }
-.rpm-value { font-size: 30px; color: lime; text-shadow: 0 0 10px lime; margin-top: 5px; }
-
+.rpm-label {
+  font-size: 16px;
+  letter-spacing: 4px;
+  color: #333;
+  opacity: .8;
+}
+.rpm-value {
+  font-size: 34px;
+  margin-top: 8px;
+  color: #00ff4c;
+  letter-spacing: 2px;
+  text-shadow: 0 0 13px #00ff4c;
+}
 .rpm-progress {
-  width: 100%; height: 10px;
-  border-radius: 5px;
-  border: 1px solid #d3d3d3;
-  background: rgba(255,255,255,0.05);
-  margin-top: 10px;
+  width: 100%; height: 10px; border-radius: 7px;
+  background: rgba(0,0,0,0.14);
+  border: 2px solid rgba(255,255,255,0.35);
+  margin-top: 12px;
   overflow: hidden;
 }
 
+/* H & F BARS */
+.vertical-cols {
+  display: flex;
+  gap: 70px;
+  justify-content: center;
+}
+.bar-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.bar-label, .bar-percentage { font-size: 20px; font-weight: bold; color: #000; }
+
+.bar-vertical {
+  width: 36px; height: 235px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 18px;
+  border: 2px solid rgba(255,255,255,0.35);
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bar-fill-vertical {
+  width: 100%;
+  transition: height .28s cubic-bezier(.2,.6,.2,1);
+  background: linear-gradient(to top, #ff0000, #ffea00, #00ff4c);
+}
+
+/* INDICATORS */
 .indicators {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px; justify-items: center;
   margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 22px;
+  justify-items: center;
 }
 
 .icon {
-  width: 50px; height: 50px;
-  background: transparent;
+  width: 52px; height: 52px;
   border-radius: 50%;
-  border: 2px solid #d3d3d3;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: .25s;
+  border: 2px solid #000;
+  background: rgba(255,255,255,0.13);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: .2s;
 }
-
 .icon img {
   width: 27px;
-  opacity: .85;
   filter: invert(0);
 }
 
+@keyframes blink {
+  0% { box-shadow: 0 0 0 yellow; }
+  50% { box-shadow: 0 0 18px yellow; }
+  100% { box-shadow: 0 0 0 yellow; }
+}
 .icon.active {
   border-color: yellow;
-  box-shadow: 0 0 12px yellow;
+  animation: blink .55s infinite;
 }
