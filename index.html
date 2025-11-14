@@ -11,7 +11,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
-      background: transparent !important;   /* INVISIBLE UNTUK GTA V */
+      background: transparent !important;
       font-family: 'DS-Digital', monospace;
       color: #000;
       height: 100vh;
@@ -21,123 +21,62 @@
       padding: 30px;
     }
 
-    .speedo-root {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 45px;
-      transform: scale(0.92);
-    }
-
+    .speedo-root { display: flex; align-items: flex-end; gap: 45px; transform: scale(0.92); }
     .vertical-cols { display: flex; gap: 70px; justify-content: center; }
 
     .bar-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .bar-label { font-size: 20px; font-weight: bold; color: #000; }
+    .bar-label, .bar-percentage { font-size: 20px; font-weight: bold; color: #000; }
 
     .bar-vertical {
-      width: 34px;
-      height: 230px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 18px;
-      overflow: hidden;
-      border: 2px solid #cfcfcf;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+      width: 34px; height: 230px; background: rgba(255,255,255,0.05);
+      border-radius: 18px; overflow: hidden; border: 2px solid #cfcfcf;
+      display: flex; flex-direction: column; justify-content: flex-end;
     }
 
     .bar-fill-vertical { width: 100%; background: #38b000; }
-    .bar-percentage { font-size: 15px; font-weight: bold; color: #000; }
 
-    .digital-container {
-      background: transparent;
-      border: none;
-      padding: 28px 32px;
-      min-width: 340px;
-    }
+    .digital-container { min-width: 340px; padding: 28px 32px; background: transparent; }
 
-    .digital-screen {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 18px;
-    }
+    .digital-screen { display: flex; align-items: baseline; justify-content: center; gap: 18px; }
 
-    .speed-value {
-      font-size: 64px;
-      color: lime;
-      text-shadow: 0 0 12px lime;
-    }
-
+    .speed-value { font-size: 64px; color: lime; text-shadow: 0 0 12px lime; }
     .speed-unit { font-size: 20px; color: #000; }
 
     .gear-display {
-      width: 60px; height: 60px; border-radius: 50%;
-      background: transparent;
-      color: #000;
+      width: 60px; height: 60px; border-radius: 50%; border: 3px solid #aaa;
       display: flex; align-items: center; justify-content: center;
-      border: 3px solid #aaa;
-      font-size: 34px;
+      font-size: 34px; color: #000;
     }
 
     .speed-progress {
-      width: 100%; height: 12px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      border: 2px solid #d3d3d3;
-      margin-top: 15px;
-      overflow: hidden;
+      width: 100%; height: 12px; border: 2px solid #d3d3d3;
+      background: rgba(255,255,255,0.05); border-radius: 10px;
+      margin-top: 15px; overflow: hidden;
     }
 
     .progress-bar { height: 100%; background: lime; }
 
-    .rpm-digital {
-      margin-top: 20px;
-      background: transparent;
-      padding: 18px;
-      border-radius: 12px;
-      border: none;
-      text-align: center;
-    }
-
+    .rpm-digital { margin-top: 20px; padding: 18px; background: transparent; text-align: center; }
     .rpm-label { font-size: 14px; letter-spacing: 3px; color: #555; }
-    .rpm-value { font-size: 30px; color: lime; text-shadow: 0 0 10px lime; margin-top: 5px; }
+    .rpm-value { font-size: 30px; margin-top: 5px; color: lime; text-shadow: 0 0 10px lime; }
 
     .rpm-progress {
-      width: 100%; height: 10px;
-      border-radius: 5px;
-      border: 1px solid #d3d3d3;
-      background: rgba(255,255,255,0.05);
-      margin-top: 10px;
-      overflow: hidden;
+      width: 100%; height: 10px; border: 1px solid #d3d3d3;
+      background: rgba(255,255,255,0.05); border-radius: 5px; margin-top: 10px; overflow: hidden;
     }
 
-    .indicators {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px; justify-items: center;
-      margin-top: 28px;
-    }
+    .indicators { margin-top: 28px; display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 22px; justify-items: center; }
 
     .icon {
-      width: 50px; height: 50px;
-      background: transparent;
-      border-radius: 50%;
-      border: 2px solid #d3d3d3;
+      width: 50px; height: 50px; border-radius: 50%; border: 2px solid #d3d3d3;
+      background: transparent; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: .25s;
+      transition: .25s;
     }
 
-    .icon img {
-      width: 27px;
-      opacity: .85;
-      filter: invert(0);
-    }
-
-    .icon.active {
-      border-color: yellow;
-      box-shadow: 0 0 12px yellow;
-    }
+    .icon img { width: 27px; opacity: .85; filter: invert(0); }
+    .icon.active { border-color: yellow; box-shadow: 0 0 12px yellow; }
   </style>
 </head>
 
@@ -145,23 +84,19 @@
 
   <div class="speedo-root">
     <div class="vertical-cols">
-
       <div class="bar-container">
         <div class="bar-label">H</div>
         <div class="bar-vertical"><div class="bar-fill-vertical" id="health-bar"></div></div>
         <div class="bar-percentage"><span id="health-percent">0</span>%</div>
       </div>
-
       <div class="bar-container">
         <div class="bar-label">F</div>
         <div class="bar-vertical"><div class="bar-fill-vertical" id="fuel-bar"></div></div>
         <div class="bar-percentage"><span id="fuel-percent">0</span>%</div>
       </div>
-
     </div>
 
     <section class="digital-container">
-
       <div class="digital-screen">
         <div class="speed-value" id="speed-display">000</div>
         <div class="speed-unit">KMH</div>
@@ -181,41 +116,84 @@
         <button class="icon" id="engine-icon"><img src="https://img.icons8.com/ios/50/engine.png"></button>
         <button class="icon" id="right-icon"><img style="transform: scaleX(-1);" src="https://img.icons8.com/pulsar-line/50/circled-left-2.png"></button>
       </div>
-
     </section>
   </div>
 
   <script>
-    let speed = 0, rpm = 0, health = 0, fuel = 0;
-
-    function updateAll() {
-      healthBar.style.height = health + "%";
-      healthPercent.textContent = Math.round(health);
-
-      fuelBar.style.height = fuel + "%";
-      fuelPercent.textContent = Math.round(fuel);
-
-      speedDisplay.textContent = String(Math.round(speed)).padStart(3,"0");
-      speedProgress.style.width = speed / 200 * 100 + "%";
-
-      rpmDisplay.textContent = String(Math.round(rpm)).padStart(4,"0");
-      rpmProgress.style.width = rpm / 8000 * 100 + "%";
-    }
+    let speedMode = 0;
 
     const healthBar = document.getElementById("health-bar");
     const fuelBar = document.getElementById("fuel-bar");
     const healthPercent = document.getElementById("health-percent");
     const fuelPercent = document.getElementById("fuel-percent");
+
     const speedDisplay = document.getElementById("speed-display");
     const speedProgress = document.getElementById("speed-progress-bar");
+
     const rpmDisplay = document.getElementById("rpm-display");
     const rpmProgress = document.getElementById("rpm-progress-bar");
 
-    document.querySelectorAll(".icon").forEach(btn =>
-      btn.addEventListener("click", () => btn.classList.toggle("active"))
-    );
+    const gearDisplay = document.getElementById("gear-display");
 
-    updateAll();
+    const leftIndicator = document.getElementById("left-signal");
+    const rightIndicator = document.getElementById("right-icon");
+    const engineIcon = document.getElementById("engine-icon");
+
+    window.addEventListener("message", function(event) {
+      const d = event.data;
+      if (d.type !== "updateHUD") return;
+
+      setSpeed(d.speed);
+      setRPM(d.rpm);
+      setFuel(d.fuel);
+      setHealth(d.health);
+      setGear(d.gear);
+      setLeftIndicator(d.leftSignal);
+      setRightIndicator(d.rightSignal);
+      setEngine(d.engine);
+    });
+
+    function setSpeed(s) {
+      if (speedMode === 1) s = s * 2.236936;
+      else if (speedMode === 2) s = s * 1.943844;
+      else s = s * 3.6;
+
+      speedDisplay.textContent = String(Math.round(s)).padStart(3, "0");
+      speedProgress.style.width = Math.min(s / 200 * 100, 100) + "%";
+    }
+
+    function setRPM(r) {
+      rpmDisplay.textContent = String(Math.round(r)).padStart(4, "0");
+      rpmProgress.style.width = Math.min(r / 8000 * 100, 100) + "%";
+    }
+
+    function setFuel(f) {
+      const p = f * 100;
+      fuelBar.style.height = p + "%";
+      fuelPercent.textContent = Math.round(p);
+    }
+
+    function setHealth(h) {
+      const p = h * 100;
+      healthBar.style.height = p + "%";
+      healthPercent.textContent = Math.round(p);
+    }
+
+    function setGear(g) {
+      gearDisplay.textContent = g === 0 ? "N" : g;
+    }
+
+    function setEngine(x) {
+      x ? engineIcon.classList.add("active") : engineIcon.classList.remove("active");
+    }
+
+    function setLeftIndicator(x) {
+      x ? leftIndicator.classList.add("active") : leftIndicator.classList.remove("active");
+    }
+
+    function setRightIndicator(x) {
+      x ? rightIndicator.classList.add("active") : rightIndicator.classList.remove("active");
+    }
   </script>
 
 </body>
